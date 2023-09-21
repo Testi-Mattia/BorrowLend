@@ -1,0 +1,20 @@
+# Usa un'immagine di base Node.js
+FROM node:14
+
+# Imposta la directory di lavoro nel container
+WORKDIR /app
+
+# Copia il package.json e il package-lock.json nella directory di lavoro
+COPY ./app/server/package.json ./app/server/package-lock.json ./
+
+# Installa le dipendenze del server
+RUN npm install
+
+# Copia il resto del codice del server dalla directory corrente (che dovrebbe essere "server" nel contesto Docker)
+COPY . .
+
+# Copia il file di configurazione di Apache
+COPY ./app/server/apache2.conf /etc/apache2/
+
+# Avvia il server
+CMD ["node", "server.js"]

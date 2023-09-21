@@ -1,0 +1,17 @@
+# Usa un'immagine di base Node.js
+FROM node:14
+
+# Imposta la directory di lavoro nel container
+WORKDIR /app
+
+# Copia il package.json e il package-lock.json nella directory di lavoro
+COPY ./app/client/package.json ./app/client/package-lock.json ./
+
+# Installa le dipendenze del client Vue
+RUN npm install
+
+# Copia il resto del codice del client Vue
+COPY . .
+
+# Avvia l'applicazione Vue
+CMD ["npm", "run", "serve"]

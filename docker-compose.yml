@@ -1,0 +1,64 @@
+version: '3.7'
+services:
+  client:
+    container_name: client
+    build:
+      context: ./
+      dockerfile: ./build/client/Dockerfile.client
+    ports:
+      - "80:8080"
+    volumes: 
+      - ./app/client:/app
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - app  # Collega il database alla rete "app"
+  
+  server:
+    container_name: server
+    build:
+      context: ./
+      dockerfile: ./build/server/Dockerfile.server
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - app  # Collega il database alla rete "app"
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./app/server:/app
+  
+  db:
+    container_name: db
+    image: mysql:8.0
+    expose:
+      - "3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - app  # Collega il database alla rete "app"  
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - app  # Collega il database alla rete "app"  
+    depends_on:
+      - db
+
+networks:
+  app:
+    driver: bridge
+
+
